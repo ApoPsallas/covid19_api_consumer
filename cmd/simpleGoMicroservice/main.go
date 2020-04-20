@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+
 	r := mux.NewRouter()
 	r.HandleFunc("/affected_countries", app_http.AffectedCountriesHandler)
 	err := http.ListenAndServe(":5000", r)
