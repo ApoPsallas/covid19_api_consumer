@@ -41,7 +41,7 @@ func (api *API) GetAffectedCountriesClient() ([]byte, error) {
 
 	res, err := api.Client.Do(req)
 	if err != nil {
-		log.Fatalf("%v %v", res.Status, err)
+		log.Printf("Client Error: %v \n", err)
 		return nil, err
 	}
 

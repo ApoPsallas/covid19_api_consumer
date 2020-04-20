@@ -16,11 +16,16 @@ func AffectedCountriesHandler(w http.ResponseWriter, r *http.Request) {
 	ac := app.AffectedCountries{}
 	affected, err := api.GetAffectedCountriesClient()
 	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
 		_ = json.NewEncoder(w).Encode(err)
 		return
 	}
 
-	_ = json.Unmarshal(affected, &ac)
+	err = json.Unmarshal(affected, &ac)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(err)
+	}
 	sort.Strings(ac.AffectedCountries)
 	w.WriteHeader(http.StatusOK)
 
