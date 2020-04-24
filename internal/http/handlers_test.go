@@ -17,7 +17,7 @@ type MockApi struct {
 	Err      error
 }
 
-func (api MockApi) GetAffectedCountriesClient() ([]byte, error) {
+func (api MockApi) GetAffectedCountries() ([]byte, error) {
 	return api.Response, api.Err
 }
 

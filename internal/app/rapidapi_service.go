@@ -8,21 +8,19 @@ import (
 	"net/http"
 )
 
-type http_client interface {
+type httpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-type Rapidapi_service struct {
-	Client http_client
+type RapidapiService struct {
+	Client httpClient
 }
 
 //GetAffectedCountries will send a HTTP request
-func (api Rapidapi_service) GetAffectedCountriesClient() ([]byte, error) {
+func (api RapidapiService) GetAffectedCountries() ([]byte, error) {
 	url := os.Getenv("GET_AFFECTED_CITIES_URL")
 	apiHost := os.Getenv("API_HOST")
 	apiKey := os.Getenv("API_KEY")
-
-	//TODO the above must be injected into the service
 
 	req, _ := http.NewRequest(http.MethodGet, "https://"+apiHost+url, nil)
 

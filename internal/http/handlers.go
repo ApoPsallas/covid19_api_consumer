@@ -9,14 +9,14 @@ import (
 )
 
 type Handlers struct {
-	Service app.API_service
+	Service app.APIService
 }
 
 //AffectedCountriesHandler handles incoming HTTP request
 func (handlers Handlers) AffectedCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	affectedCountries := app.AffectedCountries{}
-	response, err := handlers.Service.GetAffectedCountriesClient()
+	response, err := handlers.Service.GetAffectedCountries()
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		_ = json.NewEncoder(w).Encode(err.Error())

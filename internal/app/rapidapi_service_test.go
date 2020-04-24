@@ -26,9 +26,9 @@ const (
 	apiKey = "4p1k3y"
 )
 
-type client_mock struct{}
+type clientMock struct{}
 
-func (client *client_mock) Do(req *http.Request) (*http.Response, error) {
+func (client *clientMock) Do(req *http.Request) (*http.Response, error) {
 	reqBody, _ := json.Marshal("{\"Result\":\"Success\"}")
 	var err error
 	key := req.Header.Get("x-rapidapi-key")
@@ -53,10 +53,10 @@ func TestGetAffectedCountries(t *testing.T) {
 	setup()
 	expected, _ := json.Marshal("{\"Result\":\"Success\"}")
 
-	client := &client_mock{}
+	client := &clientMock{}
 
-	api := Rapidapi_service{Client: client}
-	actual, err := api.GetAffectedCountriesClient()
+	api := RapidapiService{Client: client}
+	actual, err := api.GetAffectedCountries()
 	assert.Nil(t, err)
 	assert.NotNil(t, actual)
 
@@ -71,10 +71,10 @@ func TestGetAffectedCountriesWrongApiKey(t *testing.T) {
 
 	expected := "Wrong API key"
 
-	client := &client_mock{}
+	client := &clientMock{}
 
-	api := Rapidapi_service{Client: client}
-	actual, err := api.GetAffectedCountriesClient()
+	api := RapidapiService{Client: client}
+	actual, err := api.GetAffectedCountries()
 	assert.NotNil(t, err)
 	assert.Nil(t, actual)
 	assert.Equal(t, expected, err.Error())

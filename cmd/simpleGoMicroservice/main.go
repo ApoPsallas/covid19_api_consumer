@@ -21,7 +21,7 @@ var (
 
 func createRouter() *mux.Router {
 	router := mux.NewRouter()
-	service := app.Rapidapi_service{Client: http.DefaultClient}
+	service := app.RapidapiService{Client: http.DefaultClient}
 	handlers := app_http.Handlers{Service: service}
 	router.HandleFunc("/affected_countries", handlers.AffectedCountriesHandler)
 	return router
