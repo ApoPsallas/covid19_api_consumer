@@ -8,27 +8,30 @@ import (
 	"github.com/ApoPsallas/simpleGoMicroservice/internal/app"
 )
 
-//AffectedCountriesHandler handles incoming HTTP request
-func AffectedCountriesHandler(w http.ResponseWriter, r *http.Request) {
+type Handlers struct {
+	Service app.API_service
+}
 
-	//TODO inject api_service
-	api := app.API{Client: http.DefaultClient}
-	ac := app.AffectedCountries{}
-	affected, err := api.GetAffectedCountriesClient()
+//AffectedCountriesHandler handles incoming HTTP request
+func (handlers Handlers) AffectedCountriesHandler(w http.ResponseWriter, r *http.Request) {
+
+	affectedCountries := app.AffectedCountries{}
+	response, err := handlers.Service.GetAffectedCountriesClient()
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
-		_ = json.NewEncoder(w).Encode(err)
+		_ = json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	err = json.Unmarshal(affected, &ac)
+	err = json.Unmarshal(response, &affectedCountries)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		_ = json.NewEncoder(w).Encode(err)
+		_ = json.NewEncoder(w).Encode("Wrong structure of JSON response")
+		return
 	}
-	sort.Strings(ac.AffectedCountries)
+	sort.Strings(affectedCountries.AffectedCountries)
 	w.WriteHeader(http.StatusOK)
 
-	_ = json.NewEncoder(w).Encode(ac)
+	_ = json.NewEncoder(w).Encode(affectedCountries)
 
 }

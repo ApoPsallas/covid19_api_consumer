@@ -11,7 +11,7 @@ func TestNewAffectedCountries(t *testing.T) {
 	countries := []string{"gr", "it"}
 	timestamp := "now"
 	expected := &AffectedCountries{countries, timestamp}
-	got := NewAffectedCountries(countries, timestamp)
+	actual := NewAffectedCountries(countries, timestamp)
 
-	assert.Equal(t, expected, got)
+	assert.Equal(t, expected, actual)
 }
