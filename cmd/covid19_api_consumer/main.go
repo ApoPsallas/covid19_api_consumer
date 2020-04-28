@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -30,6 +31,7 @@ func createRouter() *mux.Router {
 
 func main() {
 
+	fmt.Println("App started.")
 	err := godotenv.Load(Root + "/.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
