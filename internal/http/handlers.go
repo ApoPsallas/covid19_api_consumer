@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/ApoPsallas/simpleGoMicroservice/internal/app"
+	"github.com/ApoPsallas/covid19_api_consumer/internal/app"
 )
 
 type Handlers struct {

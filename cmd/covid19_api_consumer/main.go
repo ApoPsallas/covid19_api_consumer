@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/ApoPsallas/simpleGoMicroservice/internal/app"
-	app_http "github.com/ApoPsallas/simpleGoMicroservice/internal/http"
+	"github.com/ApoPsallas/covid19_api_consumer/internal/app"
+	app_http "github.com/ApoPsallas/covid19_api_consumer/internal/http"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )

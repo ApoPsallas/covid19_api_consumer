@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ApoPsallas/simpleGoMicroservice/internal/app"
+	"github.com/ApoPsallas/covid19_api_consumer/internal/app"
 	"github.com/stretchr/testify/assert"
 )
 

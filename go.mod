@@ -1,4 +1,4 @@
-module github.com/ApoPsallas/simpleGoMicroservice
+module github.com/ApoPsallas/covid19_api_consumer
 
 go 1.14
 
