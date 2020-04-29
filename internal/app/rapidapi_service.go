@@ -1,7 +1,10 @@
 package app
 
 import (
+	"encoding/json"
+	"errors"
 	"os"
+	"sort"
 
 	"io/ioutil"
 	"log"
@@ -17,7 +20,22 @@ type RapidapiService struct {
 }
 
 //GetAffectedCountries will send a HTTP request
-func (api RapidapiService) GetAffectedCountries() ([]byte, error) {
+func (api RapidapiService) GetAffectedCountries() (*AffectedCountries, error) {
+	affectedCountries := AffectedCountries{}
+	response, err := api.getAffectedCountriesClient()
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(response, &affectedCountries)
+	if err != nil {
+		return nil, errors.New("Wrong structure of JSON response")
+	}
+	sort.Strings(affectedCountries.AffectedCountries)
+	return &affectedCountries, err
+}
+
+func (api RapidapiService) getAffectedCountriesClient() ([]byte, error) {
+
 	url := os.Getenv("GET_AFFECTED_CITIES_URL")
 	apiHost := os.Getenv("API_HOST")
 	apiKey := os.Getenv("API_KEY")
@@ -41,4 +59,5 @@ func (api RapidapiService) GetAffectedCountries() ([]byte, error) {
 	}
 
 	return body, nil
+
 }

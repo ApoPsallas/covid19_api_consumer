@@ -13,11 +13,11 @@ import (
 )
 
 type MockApi struct {
-	Response []byte
+	Response *app.AffectedCountries
 	Err      error
 }
 
-func (api MockApi) GetAffectedCountries() ([]byte, error) {
+func (api MockApi) GetAffectedCountries() (*app.AffectedCountries, error) {
 	return api.Response, api.Err
 }
 
@@ -29,7 +29,7 @@ func TestAffectedCountriesHandler(t *testing.T) {
 	affectedCountries := app.NewAffectedCountries([]string{"es", "gr", "it", "uk"}, "now")
 	response, _ := json.Marshal(affectedCountries)
 
-	api := MockApi{Response: response, Err: nil}
+	api := MockApi{Response: affectedCountries, Err: nil}
 
 	handlerStruct := Handlers{Service: api}
 
@@ -41,37 +41,15 @@ func TestAffectedCountriesHandler(t *testing.T) {
 	//there is a "\n" added from Encoder
 }
 
-func TestAffectedCountriesHandlerWrongClientResponseStucture(t *testing.T) {
-
-	request := httptest.NewRequest("GET", "/affected_countries", nil)
-	responseWriter := httptest.NewRecorder()
-
-	affectedCountries := "{\"infected_places\":[\"here\",\"there\"],\"when\":\"now\"}"
-	response, _ := json.Marshal(affectedCountries)
-	expected := "\"Wrong structure of JSON response\""
-
-	api := MockApi{Response: response, Err: nil}
-
-	handlerStruct := Handlers{Service: api}
-
-	handler := http.HandlerFunc(handlerStruct.AffectedCountriesHandler)
-
-	handler.ServeHTTP(responseWriter, request)
-	assert.Equal(t, http.StatusInternalServerError, responseWriter.Code)
-	assert.Equal(t, expected, strings.TrimRight(responseWriter.Body.String(), "\n"))
-	//there is a "\n" added from Encoder
-}
-
 func TestAffectedCountriesHandlerServiceUnavailable(t *testing.T) {
 
 	request := httptest.NewRequest("GET", "/affected_countries", nil)
 	responseWriter := httptest.NewRecorder()
 
-	affectedCountries := ""
-	response, _ := json.Marshal(affectedCountries)
+	affectedCountries := app.AffectedCountries{}
 	expected := "\"Service Unavailable\""
 
-	api := MockApi{Response: response, Err: errors.New("Service Unavailable")}
+	api := MockApi{Response: &affectedCountries, Err: errors.New("Service Unavailable")}
 
 	handlerStruct := Handlers{Service: api}
 
