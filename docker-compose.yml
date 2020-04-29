@@ -1,0 +1,31 @@
+version: '3'
+
+# Define services
+services:
+
+  # App Service
+  covid19_consumer:
+    # Configuration for building the docker image for the service
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    ports:
+      - "6060:5000" 
+    restart: unless-stopped
+    depends_on: 
+      - redis 
+    environment: 
+      REDIS_ADDRESS: redis
+      REDIS_PORT: 6379
+    networks: 
+      - backend
+
+  # Redis Service   
+  redis:
+    image: "redis:alpine" # Use a public Redis image to build the redis service    
+    restart: unless-stopped
+    networks:
+      - backend
+
+networks:
+  backend:    

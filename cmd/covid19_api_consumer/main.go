@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 
 	"github.com/ApoPsallas/covid19_api_consumer/internal/app"
 	app_http "github.com/ApoPsallas/covid19_api_consumer/internal/http"
+	"github.com/go-redis/redis/v7"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
@@ -22,7 +25,13 @@ var (
 
 func createRouter() *mux.Router {
 	router := mux.NewRouter()
-	service := app.RapidapiService{Client: http.DefaultClient}
+	db, _ := strconv.Atoi(os.Getenv("REDIS_DB"))
+	client := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_ADDRESS") + ":" + os.Getenv("REDIS_PORT"),
+		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       db,
+	})
+	service := app.RapidapiService{Client: http.DefaultClient, RedisClient: *client}
 	handlers := app_http.Handlers{Service: service}
 	router.HandleFunc("/affected_countries", handlers.AffectedCountriesHandler)
 	return router
