@@ -10,7 +10,7 @@ import (
 	"sort"
 	"time"
 
-	redis "github.com/go-redis/redis/v7"
+	"github.com/ApoPsallas/covid19_api_consumer/internal/app/repository"
 )
 
 const (
@@ -23,7 +23,7 @@ type httpClient interface {
 
 type RapidapiService struct {
 	Client      httpClient
-	RedisClient redis.Client
+	CacheMapper repository.Cache
 }
 
 //GetAffectedCountries will send a HTTP request
@@ -31,7 +31,7 @@ func (api RapidapiService) GetAffectedCountries() (*AffectedCountries, error) {
 	affectedCountries := AffectedCountries{}
 	var err error = nil
 
-	exists, err := api.RedisClient.Exists(AFFECTED_COUNTRIES).Result()
+	exists, err := api.CacheMapper.Exists(AFFECTED_COUNTRIES)
 	if err != nil {
 		log.Printf("Redis Error: %v \n", err.Error())
 		return nil, err
@@ -39,7 +39,7 @@ func (api RapidapiService) GetAffectedCountries() (*AffectedCountries, error) {
 
 	if exists == 1 {
 
-		cachedAffectedCountries, err := api.RedisClient.Get(AFFECTED_COUNTRIES).Result()
+		cachedAffectedCountries, err := api.CacheMapper.Get(AFFECTED_COUNTRIES)
 		if err != nil {
 			log.Printf("Redis Error: %v \n", err.Error())
 			return nil, err
@@ -57,7 +57,7 @@ func (api RapidapiService) GetAffectedCountries() (*AffectedCountries, error) {
 		if err != nil {
 			return nil, errors.New("Wrong structure of JSON response")
 		}
-		_, err = api.RedisClient.Set(AFFECTED_COUNTRIES, response, 5*60*time.Second).Result()
+		_, err = api.CacheMapper.Set(AFFECTED_COUNTRIES, response, 5*60*time.Second)
 		if err != nil {
 			log.Printf("Redis Error: %v \n", err.Error())
 			return nil, err

@@ -1,16 +1,12 @@
 package app
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
 
+	"github.com/ApoPsallas/covid19_api_consumer/test/mocks"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,23 +22,6 @@ const (
 	apiKey = "4p1k3y"
 )
 
-type clientMock struct {
-	clientResponse interface{}
-}
-
-func (client *clientMock) Do(req *http.Request) (*http.Response, error) {
-
-	reqBody, _ := json.Marshal(client.clientResponse)
-	var err error
-	key := req.Header.Get("x-rapidapi-key")
-	if key != apiKey {
-		reqBody, _ = json.Marshal("")
-		err = errors.New("Wrong API key")
-	}
-
-	return &http.Response{Body: ioutil.NopCloser(bytes.NewReader(reqBody))}, err
-}
-
 func setup() {
 
 	_ = godotenv.Load(Root + "/test/.env.test")
@@ -57,9 +36,10 @@ func TestGetAffectedCountries(t *testing.T) {
 	expected := NewAffectedCountries([]string{"here", "there"}, "now")
 	//response := "{\"affected_countries\":[\"here\",\"there\"],\"statistic_taken_at\":\"now\"}"
 
-	client := &clientMock{clientResponse: expected}
+	cacheMapper := &mocks.MockCacheMapper{}
+	client := &mocks.MockHttpClient{ClientResponse: expected, ApiKey: apiKey}
 
-	api := RapidapiService{Client: client}
+	api := RapidapiService{Client: client, CacheMapper: cacheMapper}
 	actual, err := api.GetAffectedCountries()
 	assert.Nil(t, err)
 	assert.NotNil(t, actual)
@@ -75,9 +55,10 @@ func TestGetAffectedCountriesWrongApiKey(t *testing.T) {
 
 	expected := "Wrong API key"
 
-	client := &clientMock{}
+	cacheMapper := &mocks.MockCacheMapper{}
+	client := &mocks.MockHttpClient{}
 
-	api := RapidapiService{Client: client}
+	api := RapidapiService{Client: client, CacheMapper: cacheMapper}
 	actual, err := api.GetAffectedCountries()
 	assert.NotNil(t, err)
 	assert.Nil(t, actual)
@@ -91,9 +72,10 @@ func TestGetAffectedCountriesWrongResponseStructure(t *testing.T) {
 
 	expected := "Wrong structure of JSON response"
 
-	client := &clientMock{clientResponse: response}
+	cacheMapper := &mocks.MockCacheMapper{}
+	client := &mocks.MockHttpClient{ClientResponse: response, ApiKey: apiKey}
 
-	api := RapidapiService{Client: client}
+	api := RapidapiService{Client: client, CacheMapper: cacheMapper}
 	actual, err := api.GetAffectedCountries()
 	assert.NotNil(t, err)
 	assert.Nil(t, actual)
